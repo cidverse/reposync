@@ -1,0 +1,9 @@
+# ide
+.idea/*
+
+# build artifacts
+.dist
+.tmp
+
+# bundle cache
+.bundle-cache
