@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -12,6 +13,9 @@ var Version string
 
 // CommitHash will be set at build time
 var CommitHash string
+
+// RepositoryStatus will be set at build time
+var RepositoryStatus string
 
 // BuildAt will be set at build time
 var BuildAt string
@@ -24,6 +28,12 @@ var versionCmd = &cobra.Command{
 	Use:  "version",
 	Long: "Prints the version number of reposync",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("reposync v" + Version + "-" + CommitHash + " " + runtime.GOOS + "/" + runtime.GOARCH + " BuildDate=" + BuildAt)
+		fmt.Fprintf(os.Stdout, "GitVersion:    %s\n", Version)
+		fmt.Fprintf(os.Stdout, "GitCommit:     %s\n", CommitHash)
+		fmt.Fprintf(os.Stdout, "GitTreeState:  %s\n", RepositoryStatus)
+		fmt.Fprintf(os.Stdout, "BuildDate:     %s\n", BuildAt)
+		fmt.Fprintf(os.Stdout, "GoVersion:     %s\n", runtime.Version())
+		fmt.Fprintf(os.Stdout, "Compiler:      %s\n", runtime.Compiler)
+		fmt.Fprintf(os.Stdout, "Platform:      %s\n", runtime.GOOS+"/"+runtime.GOARCH)
 	},
 }

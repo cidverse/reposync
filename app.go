@@ -5,7 +5,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
-	"strings"
 )
 
 // Version will be set at build time
@@ -13,6 +12,9 @@ var Version string
 
 // CommitHash will be set at build time
 var CommitHash string
+
+// RepositoryStatus will be set at build time
+var RepositoryStatus string
 
 // BuildAt will be set at build time
 var BuildAt string
@@ -25,15 +27,10 @@ func init() {
 	// Only log the warning severity or above.
 	zerolog.SetGlobalLevel(zerolog.WarnLevel)
 
-	// detect debug mode
-	debugValue, debugIsSet := os.LookupEnv("NCI_DEBUG")
-	if debugIsSet && strings.EqualFold(debugValue, "true") {
-		zerolog.SetGlobalLevel(zerolog.TraceLevel)
-	}
-
 	// version information
 	cmd.Version = Version
 	cmd.CommitHash = CommitHash
+	cmd.RepositoryStatus = RepositoryStatus
 	cmd.BuildAt = BuildAt
 }
 
