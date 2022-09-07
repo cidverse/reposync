@@ -2,6 +2,13 @@
 
 > A cli tool to mirror/sync many projects onto the local file system (and/or merge content of specific folders to aggregate ie. doc files)
 
+## Installation
+
+```bash
+curl -L -o /usr/local/bin/reposync https://github.com/cidverse/reposync/releases/download/v0.1.0/linux_amd64
+chmod +x /usr/local/bin/reposync
+```
+
 ## Usage
 
 ### Sync
