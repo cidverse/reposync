@@ -15,7 +15,6 @@ import (
 
 func init() {
 	rootCmd.AddCommand(bundleCmd)
-	bundleCmd.Flags().StringP("config", "s", "", "config file, default ./reposync.yaml")
 }
 
 var bundleCmd = &cobra.Command{
@@ -23,7 +22,7 @@ var bundleCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config, configErr := config.LoadConfig(cfg.ConfigFile)
 		if configErr != nil {
-			log.Fatal().Err(configErr).Str("file", configFile).Msg("failed to parse config file")
+			log.Fatal().Err(configErr).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
 		}
 
 		for key, bundle := range config.Bundle {

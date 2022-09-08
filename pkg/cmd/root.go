@@ -21,14 +21,13 @@ var (
 	}{}
 	validLogLevels  = []string{"trace", "debug", "info", "warn", "error"}
 	validLogFormats = []string{"plain", "color", "json"}
-	configFile      string
 )
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&cfg.LogLevel, "log-level", "info", "log level - allowed: "+strings.Join(validLogLevels, ","))
 	rootCmd.PersistentFlags().StringVar(&cfg.LogFormat, "log-format", "color", "log format - allowed: "+strings.Join(validLogFormats, ","))
 	rootCmd.PersistentFlags().BoolVar(&cfg.LogCaller, "log-caller", false, "include caller in log functions")
-	rootCmd.PersistentFlags().StringVar(&cfg.ConfigFile, "config", "reposync.yaml", "config file, default ./reposync.yaml")
+	rootCmd.PersistentFlags().StringVar(&cfg.ConfigFile, "config", "", "config file, default reposync.yaml")
 }
 
 var rootCmd = &cobra.Command{
@@ -78,9 +77,12 @@ var rootCmd = &cobra.Command{
 		log.Debug().Str("log-level", cfg.LogLevel).Str("log-format", cfg.LogFormat).Bool("log-caller", cfg.LogCaller).Msg("configured logging")
 
 		// config
-		if cfg.ConfigFile == "reposync.yaml" {
+		if cfg.ConfigFile == "" {
 			path, _ := os.Getwd()
 			cfg.ConfigFile = filepath.Join(path, "reposync.yaml")
+		} else if !strings.HasPrefix(cfg.ConfigFile, "/") && !strings.Contains(cfg.ConfigFile, ":\\") {
+			path, _ := os.Getwd()
+			cfg.ConfigFile = filepath.Join(path, cfg.ConfigFile)
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {

@@ -9,7 +9,6 @@ import (
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
-	syncCmd.Flags().StringP("config", "s", "", "config file, default ./reposync.yaml")
 }
 
 var syncCmd = &cobra.Command{
@@ -18,7 +17,7 @@ var syncCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config, configErr := config.LoadConfig(cfg.ConfigFile)
 		if configErr != nil {
-			log.Fatal().Err(configErr).Str("file", configFile).Msg("failed to parse config file")
+			log.Fatal().Err(configErr).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
 		}
 
 		// clone sources

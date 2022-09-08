@@ -11,11 +11,17 @@ type RepoSyncSource struct {
 	Group     []string          `yaml:"group"`
 	TargetDir string            `yaml:"target"`
 	Bundle    RepoBundleOptions `yaml:"bundle"`
+	Auth      RepoSyncAuth      `yaml:"auth"`
 }
 
 type RepoBundle struct {
 	TargetDir string           `yaml:"target"`
 	Sources   []RepoSyncSource `yaml:"sources"`
+}
+
+type RepoSyncAuth struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 type RepoBundleOptions struct {
