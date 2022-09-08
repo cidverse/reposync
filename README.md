@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-curl -L -o /usr/local/bin/reposync https://github.com/cidverse/reposync/releases/download/v0.1.0/linux_amd64
+curl -L -o /usr/local/bin/reposync https://github.com/cidverse/reposync/releases/download/v0.2.0/linux_amd64
 chmod +x /usr/local/bin/reposync
 ```
 
