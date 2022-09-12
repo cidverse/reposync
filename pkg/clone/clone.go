@@ -50,6 +50,22 @@ func FetchProject(source config.RepoSyncSource, target string) {
 				return
 			}
 
+			// pull
+			workTree, workTreeErr := repo.Worktree()
+			if workTreeErr == nil {
+				pullErr := workTree.Pull(&git.PullOptions{
+					RemoteName:    "origin",
+					ReferenceName: plumbing.ReferenceName(source.Ref),
+					Progress:      os.Stdout,
+					Auth:          GetRepoAuth(source),
+					SingleBranch:  true,
+				})
+				if pullErr != nil {
+					log.Warn().Err(pullErr).Str("directory", target).Str("repo", source.Url).Msg("repository pull failed")
+					return
+				}
+			}
+
 			log.Info().Str("directory", target).Str("repo", source.Url).Msg("repository updated successfully")
 		}
 	}
