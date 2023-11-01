@@ -1,16 +1,17 @@
 package cmd
 
 import (
+	"io/fs"
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+
 	"github.com/cidverse/reposync/pkg/clone"
 	"github.com/cidverse/reposync/pkg/config"
 	"github.com/gosimple/slug"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
-	"io/fs"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func init() {
@@ -48,7 +49,7 @@ var bundleCmd = &cobra.Command{
 					} else {
 						extension := getFileExtension(d.Name())
 						if len(s.Bundle.Extensions) > 0 {
-							if funk.ContainsString(s.Bundle.Extensions, extension) {
+							if slices.Contains(s.Bundle.Extensions, extension) {
 								files = append(files, path)
 							}
 						} else {
@@ -82,13 +83,13 @@ var bundleCmd = &cobra.Command{
 	},
 }
 
-func getBundleCacheDir(source config.RepoSyncSource) string {
+func getBundleCacheDir(source config.RepoSource) string {
 	currentDir, _ := os.Getwd()
 	contentDir := filepath.Join(currentDir, ".bundle-cache", slug.Make(source.Url+source.Ref))
 	return contentDir
 }
 
-func getBundleCacheContentDir(source config.RepoSyncSource) string {
+func getBundleCacheContentDir(source config.RepoSource) string {
 	contentDir := getBundleCacheDir(source)
 	if source.Bundle.SourcePrefix != "" {
 		contentDir = filepath.Join(contentDir, source.Bundle.SourcePrefix)

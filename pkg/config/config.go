@@ -1,11 +1,19 @@
 package config
 
 type RepoSyncConfig struct {
-	Sources []RepoSyncSource      `yaml:"sources"`
+	Servers []Server              `yaml:"servers"`
+	Sources []RepoSource          `yaml:"sources"`
 	Bundle  map[string]RepoBundle `yaml:"bundle"`
 }
 
-type RepoSyncSource struct {
+type Server struct {
+	Server    string       `yaml:"url"`
+	Type      string       `yaml:"type"`
+	TargetDir string       `yaml:"target"`
+	Auth      RepoSyncAuth `yaml:"auth"`
+}
+
+type RepoSource struct {
 	Url       string            `yaml:"url"`
 	Ref       string            `yaml:"ref"`
 	Group     []string          `yaml:"group"`
@@ -15,8 +23,8 @@ type RepoSyncSource struct {
 }
 
 type RepoBundle struct {
-	TargetDir string           `yaml:"target"`
-	Sources   []RepoSyncSource `yaml:"sources"`
+	TargetDir string       `yaml:"target"`
+	Sources   []RepoSource `yaml:"sources"`
 }
 
 type RepoSyncAuth struct {

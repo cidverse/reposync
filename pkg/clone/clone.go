@@ -1,19 +1,20 @@
 package clone
 
 import (
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/cidverse/reposync/pkg/config"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/rs/zerolog/log"
-	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
-func FetchProject(source config.RepoSyncSource, target string) {
+func FetchProject(source config.RepoSource, target string) {
 	if _, err := os.Stat(target); err != nil {
 		log.Debug().Str("directory", target).Msg("target directory is empty, cloning project")
 		_, cloneErr := git.PlainClone(target, false, &git.CloneOptions{
@@ -71,7 +72,7 @@ func FetchProject(source config.RepoSyncSource, target string) {
 	}
 }
 
-func GetRepoAuth(source config.RepoSyncSource) transport.AuthMethod {
+func GetRepoAuth(source config.RepoSource) transport.AuthMethod {
 	var auth transport.AuthMethod
 
 	// config file

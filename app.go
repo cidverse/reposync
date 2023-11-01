@@ -1,10 +1,11 @@
 package main
 
 import (
+	"os"
+
 	"github.com/cidverse/reposync/pkg/cmd"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
 )
 
 // Version will be set at build time

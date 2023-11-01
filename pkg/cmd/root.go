@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/thoas/go-funk"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -35,7 +35,7 @@ var rootCmd = &cobra.Command{
 	Long: `A cli tool to mirror/sync many projects onto the local file system (and/or merge content of specific folders to aggregate ie. doc files)`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// log format
-		if !funk.ContainsString(validLogFormats, cfg.LogFormat) {
+		if !slices.Contains(validLogFormats, cfg.LogFormat) {
 			log.Error().Str("current", cfg.LogFormat).Strs("valid", validLogFormats).Msg("invalid log format specified")
 			os.Exit(1)
 		}
@@ -57,7 +57,7 @@ var rootCmd = &cobra.Command{
 		zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 		// log level
-		if !funk.ContainsString(validLogLevels, cfg.LogLevel) {
+		if !slices.Contains(validLogLevels, cfg.LogLevel) {
 			log.Error().Str("current", cfg.LogLevel).Strs("valid", validLogLevels).Msg("invalid log level specified")
 			os.Exit(1)
 		}
