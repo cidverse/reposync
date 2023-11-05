@@ -7,23 +7,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(syncCmd)
-}
+func syncCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "sync",
+		Aliases: []string{"s"},
+		Run: func(cmd *cobra.Command, args []string) {
+			c, err := config.Load()
+			if err != nil {
+				log.Fatal().Err(err).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
+			}
 
-var syncCmd = &cobra.Command{
-	Use:     "sync",
-	Aliases: []string{"s"},
-	Run: func(cmd *cobra.Command, args []string) {
-		config, configErr := config.LoadConfig(cfg.ConfigFile)
-		if configErr != nil {
-			log.Fatal().Err(configErr).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
-		}
-
-		// clone sources
-		for _, s := range config.Sources {
-			log.Debug().Str("remote", s.Url).Str("remote-ref", s.Ref).Str("target", s.TargetDir).Msg("processing project")
-			clone.FetchProject(s, s.TargetDir)
-		}
-	},
+			// clone sources
+			for _, s := range c.Sources {
+				log.Debug().Str("remote", s.Url).Str("remote-ref", s.Ref).Str("target", s.TargetDir).Msg("processing project")
+				clone.FetchProject(s, s.TargetDir)
+			}
+		},
+	}
 }

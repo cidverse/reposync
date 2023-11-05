@@ -14,73 +14,71 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(bundleCmd)
-}
-
-var bundleCmd = &cobra.Command{
-	Use: "bundle",
-	Run: func(cmd *cobra.Command, args []string) {
-		config, configErr := config.LoadConfig(cfg.ConfigFile)
-		if configErr != nil {
-			log.Fatal().Err(configErr).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
-		}
-
-		for key, bundle := range config.Bundle {
-			log.Info().Str("bundle", key).Msg("updating bundle")
-
-			// clone or update
-			for _, s := range bundle.Sources {
-				cacheDir := getBundleCacheDir(s)
-				clone.FetchProject(s, cacheDir)
+func bundleCmd() *cobra.Command {
+	return &cobra.Command{
+		Use: "bundle",
+		Run: func(cmd *cobra.Command, args []string) {
+			config, configErr := config.Load()
+			if configErr != nil {
+				log.Fatal().Err(configErr).Str("file", cfg.ConfigFile).Msg("failed to parse config file")
 			}
 
-			// merge content
-			for _, s := range bundle.Sources {
-				// bundle sources
-				contentDir := getBundleCacheContentDir(s)
-				var files []string
-				fileWalkErr := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
-					// check for directory skip
-					if d.IsDir() {
-						if d.Name() == ".git" || d.Name() == ".idea" {
-							return filepath.SkipDir
-						}
-					} else {
-						extension := getFileExtension(d.Name())
-						if len(s.Bundle.Extensions) > 0 {
-							if slices.Contains(s.Bundle.Extensions, extension) {
-								files = append(files, path)
+			for key, bundle := range config.Bundle {
+				log.Info().Str("bundle", key).Msg("updating bundle")
+
+				// clone or update
+				for _, s := range bundle.Sources {
+					cacheDir := getBundleCacheDir(s)
+					clone.FetchProject(s, cacheDir)
+				}
+
+				// merge content
+				for _, s := range bundle.Sources {
+					// bundle sources
+					contentDir := getBundleCacheContentDir(s)
+					var files []string
+					fileWalkErr := filepath.WalkDir(contentDir, func(path string, d fs.DirEntry, err error) error {
+						// check for directory skip
+						if d.IsDir() {
+							if d.Name() == ".git" || d.Name() == ".idea" {
+								return filepath.SkipDir
 							}
 						} else {
-							files = append(files, path)
+							extension := getFileExtension(d.Name())
+							if len(s.Bundle.Extensions) > 0 {
+								if slices.Contains(s.Bundle.Extensions, extension) {
+									files = append(files, path)
+								}
+							} else {
+								files = append(files, path)
+							}
 						}
+
+						return nil
+					})
+					if fileWalkErr != nil {
+						log.Fatal().Err(fileWalkErr).Msg("failed to query repository file list")
 					}
 
-					return nil
-				})
-				if fileWalkErr != nil {
-					log.Fatal().Err(fileWalkErr).Msg("failed to query repository file list")
-				}
+					// targetDir
+					targetDir, _ := filepath.Abs(bundle.TargetDir)
+					if s.Bundle.TargetPrefix != "" {
+						targetDir = filepath.Join(targetDir, s.Bundle.TargetPrefix)
+					}
 
-				// targetDir
-				targetDir, _ := filepath.Abs(bundle.TargetDir)
-				if s.Bundle.TargetPrefix != "" {
-					targetDir = filepath.Join(targetDir, s.Bundle.TargetPrefix)
-				}
+					for _, file := range files {
+						contentDir := getBundleCacheContentDir(s)
+						relativeFile, _ := filepath.Rel(contentDir, file)
+						targetFile := filepath.Join(targetDir, relativeFile)
 
-				for _, file := range files {
-					contentDir := getBundleCacheContentDir(s)
-					relativeFile, _ := filepath.Rel(contentDir, file)
-					targetFile := filepath.Join(targetDir, relativeFile)
-
-					log.Debug().Str("source-file", relativeFile).Str("target-file", targetFile).Msg("copy file")
-					copyFile(file, targetFile)
+						log.Debug().Str("source-file", relativeFile).Str("target-file", targetFile).Msg("copy file")
+						copyFile(file, targetFile)
+					}
+					log.Info().Int("count", len(files)).Str("target-dir", targetDir).Msg("updated files in target directory")
 				}
-				log.Info().Int("count", len(files)).Str("target-dir", targetDir).Msg("updated files in target directory")
 			}
-		}
-	},
+		},
+	}
 }
 
 func getBundleCacheDir(source config.RepoSource) string {
