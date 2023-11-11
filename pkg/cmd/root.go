@@ -80,8 +80,8 @@ func rootCmd() *cobra.Command {
 	cmd.PersistentFlags().BoolVar(&cfg.LogCaller, "log-caller", false, "include caller in log functions")
 	cmd.PersistentFlags().StringVar(&cfg.ConfigFile, "config", "", "config file")
 
-	cmd.AddCommand(syncCmd())
-	cmd.AddCommand(bundleCmd())
+	cmd.AddCommand(indexCmd())
+	cmd.AddCommand(updateCmd())
 	cmd.AddCommand(versionCmd())
 
 	return cmd

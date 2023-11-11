@@ -14,25 +14,6 @@ var fileLocations = []string{
 	"$HOME/.reposync.yaml",
 }
 
-func findFirstExistingConfigFile() (string, error) {
-	for _, file := range fileLocations {
-		// resolve env vars
-		file = os.ExpandEnv(file)
-
-		// skip if path contains unresolved env vars
-		if strings.Contains(file, "$") {
-			continue
-		}
-
-		// check if file exists
-		if _, err := os.Stat(file); err == nil {
-			return file, nil
-		}
-	}
-
-	return "", os.ErrNotExist
-}
-
 func loadConfig(file string) (*RepoSyncConfig, error) {
 	cfg := RepoSyncConfig{}
 
@@ -46,11 +27,21 @@ func loadConfig(file string) (*RepoSyncConfig, error) {
 		return nil, yamlErr
 	}
 
+	// default values
+	for _, s := range cfg.Servers {
+		if s.Mirror.DefaultAction == "" {
+			s.Mirror.DefaultAction = RuleActionInclude
+		}
+		if s.Mirror.Rules == nil {
+			s.Mirror.Rules = []MirrorRule{}
+		}
+	}
+
 	return &cfg, nil
 }
 
 func Load() (*RepoSyncConfig, error) {
-	file, fileErr := findFirstExistingConfigFile()
+	file, fileErr := findFirstExistingConfigFile(fileLocations)
 	if fileErr != nil {
 		return nil, fmt.Errorf("no config file found, tried: %s", strings.Join(fileLocations, ", "))
 	}

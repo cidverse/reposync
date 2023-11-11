@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "enum": [
+        1
+      ],
+      "default": 1
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "github",
+              "gitlab"
+            ]
+          },
+          "auth": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "username",
+              "password"
+            ]
+          },
+          "mirror": {
+            "type": "object",
+            "properties": {
+              "dir": {
+                "type": "string"
+              },
+              "default-action": {
+                "type": "string",
+                "enum": [
+                  "include",
+                  "exclude"
+                ],
+                "default": "include"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "rule": {
+                      "type": "string"
+                    },
+                    "action": {
+                      "type": "string",
+                      "enum": [
+                        "include",
+                        "exclude"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "rule",
+                    "action"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "dir"
+            ]
+          }
+        },
+        "required": [
+          "url",
+          "type"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "servers"
+  ]
+}
