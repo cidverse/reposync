@@ -54,17 +54,18 @@ func updateCmd() *cobra.Command {
 				}
 
 				// setup platform
-				log.Info().Str("server", s.Server).Str("type", s.Type).Msg("processing server")
-				platform, err := vcsapp.NewPlatform(config.AuthToPlatformConfig(s.Type, s.Server, s.Auth))
-				if err != nil {
-					log.Fatal().Err(err).Msg("failed to initialize platform")
+				log.Info().Str("server", s.Server).Str("type", s.Type).Msg("querying server")
+				platform, platformErr := vcsapp.NewPlatform(config.AuthToPlatformConfig(s.Type, s.Server, s.Auth))
+				if platformErr != nil {
+					log.Fatal().Err(platformErr).Msg("failed to initialize platform")
 				}
 
 				// query repositories
-				repos, err := platform.Repositories(api.RepositoryListOpts{})
-				if err != nil {
-					log.Fatal().Err(err).Msg("failed to list repositories")
+				repos, repoErr := platform.Repositories(api.RepositoryListOpts{IncludeBranches: false, IncludeCommitHash: false})
+				if repoErr != nil {
+					log.Fatal().Err(repoErr).Msg("failed to list repositories")
 				}
+				log.Info().Int("count", len(repos)).Str("server", s.Server).Msg("received repository list")
 
 				// process repositories
 				for _, r := range repos {

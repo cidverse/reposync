@@ -41,6 +41,12 @@ func loadConfig(file string) (*RepoSyncConfig, error) {
 }
 
 func Load() (*RepoSyncConfig, error) {
+	// allow overriding config file location via environment variable
+	if os.Getenv("REPOSYNC_CONFIG") != "" {
+		return loadConfig(os.Getenv("REPOSYNC_CONFIG"))
+	}
+
+	// check default locations
 	file, fileErr := findFirstExistingConfigFile(fileLocations)
 	if fileErr != nil {
 		return nil, fmt.Errorf("no config file found, tried: %s", strings.Join(fileLocations, ", "))
