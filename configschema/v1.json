@@ -32,11 +32,18 @@
               },
               "password": {
                 "type": "string"
+              },
+              "password-file": {
+                "type": "string",
+                "description": "Path to a file containing the password. Supports env variables and ~."
               }
             },
             "required": [
-              "username",
-              "password"
+              "username"
+            ],
+            "oneOf": [
+              { "required": ["password"] },
+              { "required": ["password-file"] }
             ]
           },
           "mirror": {
@@ -52,6 +59,14 @@
                   "exclude"
                 ],
                 "default": "include"
+              },
+              "clone-method": {
+                "type": "string",
+                "enum": [
+                  "ssh",
+                  "https"
+                ],
+                "default": "https"
               },
               "rules": {
                 "type": "array",

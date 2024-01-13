@@ -81,6 +81,7 @@ func rootCmd() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&cfg.ConfigFile, "config", "", "config file")
 
 	cmd.AddCommand(indexCmd())
+	cmd.AddCommand(cloneCmd())
 	cmd.AddCommand(updateCmd())
 	cmd.AddCommand(versionCmd())
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/cidverse/go-rules/pkg/expr"
 	"github.com/cidverse/go-vcsapp/pkg/platform/api"
@@ -41,8 +42,9 @@ type RepoBundle struct {
 }
 
 type RepoSyncAuth struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+	Username     string `yaml:"username"`
+	Password     string `yaml:"password"`
+	PasswordFile string `yaml:"password-file"`
 }
 
 type RepoBundleOptions struct {
@@ -53,7 +55,7 @@ type RepoBundleOptions struct {
 
 type MirrorOpts struct {
 	LocalDir      string       `yaml:"dir"`
-	CloneMethod   CloneMethod  `yaml:"method"`
+	CloneMethod   CloneMethod  `yaml:"clone-method"`
 	Rules         []MirrorRule `yaml:"rules"`
 	DefaultAction RuleAction   `yaml:"default-action"`
 }
@@ -77,20 +79,40 @@ const (
 	RuleActionExclude RuleAction = "exclude"
 )
 
-func AuthToPlatformConfig(serverType string, serverUrl string, auth RepoSyncAuth) vcsapp.PlatformConfig {
+func AuthToPlatformConfig(serverType string, serverUrl string, auth RepoSyncAuth) (vcsapp.PlatformConfig, error) {
+	// password file
+	if auth.PasswordFile != "" {
+		// resolve path
+		auth.PasswordFile = strings.Replace(auth.PasswordFile, "~", os.Getenv("HOME"), 1)
+		auth.PasswordFile = os.ExpandEnv(auth.PasswordFile)
+
+		// read
+		file, err := os.ReadFile(auth.PasswordFile)
+		if err != nil {
+			return vcsapp.PlatformConfig{}, fmt.Errorf("failed to read password file: %w", err)
+		}
+		auth.Password = string(file)
+	}
+
+	// password is required
+	if auth.Password == "" {
+		return vcsapp.PlatformConfig{}, fmt.Errorf("no password provided")
+	}
+
+	// platform config
 	if serverType == "github" {
 		return vcsapp.PlatformConfig{
 			GitHubUsername: os.ExpandEnv(auth.Username),
 			GitHubToken:    os.ExpandEnv(auth.Password),
-		}
+		}, nil
 	} else if serverType == "gitlab" {
 		return vcsapp.PlatformConfig{
 			GitLabServer:      os.ExpandEnv(serverUrl),
 			GitLabAccessToken: os.ExpandEnv(auth.Password),
-		}
+		}, nil
 	}
 
-	return vcsapp.PlatformConfig{}
+	return vcsapp.PlatformConfig{}, fmt.Errorf("unsupported server type: %s", serverType)
 }
 
 func EvaluateRules(rules []MirrorRule, defaultAction RuleAction, repo api.Repository) RuleAction {
