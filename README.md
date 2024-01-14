@@ -1,7 +1,37 @@
 # RepoSync
 
-> RepoSync allows you to clone all projects you have membership of into a local directory, or mirror specific projects into a local directory.
+> You can configure one or more platforms as source to mirror the structure from the remote server onto your local system (repositories will be moved if necessary).
 > You can use complex rules to include or exclude projects based on the namespace or other properties.
+
+## Configuration
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/cidverse/reposync/main/configschema/v1.json
+servers:
+  - url: https://github.com
+    type: github
+    auth:
+      # you can provide your personal access token directly or in a file
+      username: YourAccount
+      password: <readOnlyPersonalAccessToken>
+      password-file: /path/to/file
+    mirror:
+      dir: /tmp/github
+      default-action: exclude
+      rules:
+        - rule: group == "my-org"
+          action: include
+```
+
+The configuration is read from `~/.config/reposync/config.yaml` by default, but you can also specify a custom path by setting the `REPOSYNC_CONFIG` environment variable.
+
+Supported platforms:
+
+- `github`
+- `gitlab`
+
+> The `git` commands will use your local git installation, so you can use ssh keys or other authentication methods.
+> The personal access tokens are only used to query the repositories you have access to and not to clone them.
 
 ## Installation
 
@@ -17,46 +47,24 @@ chmod +x ~/.local/bin/reposync
 > This is work-in-progress and not yet implemented.
 
 Before your first run, you can use `reposync index /old-project-dir`, to add your local projects into the reposync state.
-When running `reposync update`, it will then move the projects to the new location, instead of cloning them.
+When running `reposync clone`, it will then move the projects to the new location, instead of cloning them.
+
+### Clone
+
+`reposync clone` will clone all projects you have access to into a target directory.
+It will also move existing projects to mirror the remote structure (`<namespace>/<projectName>`).
 
 ### Update
 
-You can define multiple projects, add a platform to clone all repositories you are a member of, or both. The projects will mirror the structure from the remote server locally (repositories will be moved if necessary).
+`reposync update` will pull the latest changes from the remote server for tracked projects.
 
-```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/cidverse/reposync/main/configschema/v1.json
-servers:
-  - url: https://github.com
-    type: github
-    auth:
-      username: YourAccount
-      password: <readOnlyPersonalAccessToken>
-    mirror:
-      dir: /tmp/github
-      default-action: exclude
-      rules:
-        - rule: group == "my-org"
-          action: include
-```
+### HouseKeeping
 
-Supported platforms:
-- `github`
-- `gitlab`
+`reposync housekeeping` (`reposync hk`) will run the following tasks for all repositories:
 
-> The `git clone` will use your local git, so you can use ssh keys or other authentication methods. The personal access tokens are only used to query the repositories you have access to.
-
-### Sync
-
-Sync will check out all defined projects locally in the defined structure, can be grouped to clone specific project groups.
-
-```yaml
-sources:
-- url: https://github.com/cidverse/reposync.git
-  ref: HEAD
-  group:
-    - test
-  target: ~/source/my-project
-```
+- `git prune --expire now`
+- `git gc --auto`
+- `git fsck --full --unreachable --strict`
 
 ### Rules
 

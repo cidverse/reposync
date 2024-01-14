@@ -143,7 +143,12 @@ func cloneCmd() *cobra.Command {
 						log.Debug().Str("repo", r.Namespace+"/"+r.Name).Str("dir", expectedState.Directory).Msg("repository already present in expected location")
 					}
 
-					// update remote (allows switching between https/ssh for all repositories)
+					// dry-run
+					if dryRun {
+						continue
+					}
+
+					// update remote (allows easy switching between https/ssh for all repositories)
 					updateRemoteErr := repository.UpdateRemote(expectedState.Directory, remote, silent)
 					if updateRemoteErr != nil {
 						log.Error().Err(updateRemoteErr).Str("repo", r.Namespace+"/"+r.Name).Msg("failed to update remote")
