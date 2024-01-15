@@ -10,6 +10,7 @@ import (
 	"github.com/cidverse/reposync/pkg/clone"
 	"github.com/cidverse/reposync/pkg/config"
 	"github.com/cidverse/reposync/pkg/repository"
+	"github.com/cidverse/reposync/pkg/util"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -100,7 +101,7 @@ func cloneCmd() *cobra.Command {
 						Namespace: r.Namespace,
 						Name:      r.Name,
 						Remote:    remote,
-						Directory: filepath.Join(s.Mirror.LocalDir, r.Namespace, r.Name),
+						Directory: filepath.Join(util.ResolvePath(s.Mirror.LocalDir), r.Namespace, r.Name),
 						LastSync:  time.Now(),
 					}
 
