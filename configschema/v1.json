@@ -68,6 +68,15 @@
                 ],
                 "default": "https"
               },
+              "naming-style": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "lowercase",
+                  "slug"
+                ],
+                "default": "slug"
+              },
               "rules": {
                 "type": "array",
                 "items": {

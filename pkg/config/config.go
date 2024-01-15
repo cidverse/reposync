@@ -56,6 +56,7 @@ type RepoBundleOptions struct {
 type MirrorOpts struct {
 	LocalDir      string       `yaml:"dir"`
 	CloneMethod   CloneMethod  `yaml:"clone-method"`
+	NamingStyle   NamingStyle  `yaml:"naming-style"`
 	Rules         []MirrorRule `yaml:"rules"`
 	DefaultAction RuleAction   `yaml:"default-action"`
 }
@@ -77,6 +78,14 @@ type RuleAction string
 const (
 	RuleActionInclude RuleAction = "include"
 	RuleActionExclude RuleAction = "exclude"
+)
+
+type NamingStyle string
+
+const (
+	NamingSchemeName      NamingStyle = "name"
+	NamingSchemeLowercase NamingStyle = "lowercase"
+	NamingSchemeSlug      NamingStyle = "slug"
 )
 
 func AuthToPlatformConfig(serverType string, serverUrl string, auth RepoSyncAuth) (vcsapp.PlatformConfig, error) {

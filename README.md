@@ -18,6 +18,7 @@ servers:
     mirror:
       dir: /tmp/github
       default-action: exclude
+      naming-style: slug
       rules:
         - rule: group == "my-org"
           action: include

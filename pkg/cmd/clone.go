@@ -101,7 +101,7 @@ func cloneCmd() *cobra.Command {
 						Namespace: r.Namespace,
 						Name:      r.Name,
 						Remote:    remote,
-						Directory: filepath.Join(util.ResolvePath(s.Mirror.LocalDir), r.Namespace, r.Name),
+						Directory: filepath.Join(util.ResolvePath(s.Mirror.LocalDir), util.Slugify(r.Namespace, string(s.Mirror.NamingStyle)), util.Slugify(r.Name, string(s.Mirror.NamingStyle))),
 						LastSync:  time.Now(),
 					}
 

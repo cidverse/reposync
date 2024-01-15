@@ -4,8 +4,9 @@ go 1.21
 
 require (
 	github.com/cidverse/go-rules v0.0.0-20231112122021-075e5e6f8abc
-	github.com/cidverse/go-vcsapp v0.0.0-20240112214915-b44d4bf1c2aa
+	github.com/cidverse/go-vcsapp v0.0.0-20240114201213-aab0a1901330
 	github.com/go-git/go-git/v5 v5.11.0
+	github.com/gosimple/slug v1.13.1
 	github.com/mattn/go-colorable v0.1.13
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.8.0
@@ -30,6 +31,7 @@ require (
 	github.com/google/go-github/v57 v57.0.0 // indirect
 	github.com/google/go-github/v58 v58.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.5 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
