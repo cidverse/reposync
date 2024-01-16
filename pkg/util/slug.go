@@ -12,8 +12,11 @@ func Slugify(input string, namingStyle string) string {
 	if namingStyle == "lowercase" {
 		return strings.ToLower(input)
 	} else if namingStyle == "slug" || namingStyle == "" {
-		s := slug.Make(input)
-		return strings.ToLower(s)
+		parts := strings.Split(input, "/")
+		for i, part := range parts {
+			parts[i] = slug.Make(part)
+		}
+		return strings.Join(parts, "/")
 	} else if namingStyle == "name" {
 		return input
 	}
