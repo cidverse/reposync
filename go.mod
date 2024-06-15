@@ -15,7 +15,7 @@ require (
 	github.com/gosimple/slug v1.14.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/rs/zerolog v1.33.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
