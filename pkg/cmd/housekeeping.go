@@ -23,7 +23,7 @@ func houseKeepingCmd() *cobra.Command {
 			stateFile := config.StateFile()
 			state, err := config.LoadState(stateFile)
 			if err != nil {
-				log.Fatal().Err(err).Str("file", cfg.ConfigFile).Msg("failed to parse state file")
+				log.Fatal().Err(err).Str("file", configFile).Msg("failed to parse state file")
 			}
 			defer func(state *config.SyncState) { // ensure state is updated
 				saveErr := config.SaveState(stateFile, state)
