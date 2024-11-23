@@ -9,7 +9,7 @@ go 1.22.0
 toolchain go1.23.3
 
 require (
-	github.com/cidverse/cidverseutils/zerologconfig v0.1.0
+	github.com/cidverse/cidverseutils/zerologconfig v0.1.1
 	github.com/cidverse/go-rules v0.0.0-20231112122021-075e5e6f8abc
 	github.com/cidverse/go-vcsapp v0.0.0-20241118202459-3d3e6e44b263
 	github.com/go-git/go-git/v5 v5.12.0
