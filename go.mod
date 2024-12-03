@@ -6,7 +6,7 @@ module github.com/cidverse/reposync
 
 go 1.22.0
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	github.com/cidverse/cidverseutils/zerologconfig v0.1.1
