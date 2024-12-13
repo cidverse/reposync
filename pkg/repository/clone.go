@@ -51,7 +51,7 @@ func FetchRepository(target string, silent bool) error {
 
 func PullRepository(target string, silent bool) error {
 	// pull using git cli
-	cmd := exec.Command("git", "pull")
+	cmd := exec.Command("git", "pull", "--ff-only")
 	cmd.Dir = target
 	if !silent {
 		cmd.Stdout = os.Stdout

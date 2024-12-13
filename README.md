@@ -11,7 +11,6 @@ servers:
   - url: https://github.com
     type: github
     auth:
-      # you can provide your personal access token directly or in a file
       username: YourAccount
       password: <readOnlyPersonalAccessToken>
       password-file: /path/to/file
@@ -43,29 +42,48 @@ chmod +x ~/.local/bin/reposync
 
 ## Usage
 
-### Index
-
-> This is work-in-progress and not yet implemented.
-
-Before your first run, you can use `reposync index /old-project-dir`, to add your local projects into the reposync state.
-When running `reposync clone`, it will then move the projects to the new location, instead of cloning them.
-
 ### Clone
 
-`reposync clone` will clone all projects you have access to into a target directory.
-It will also move existing projects to mirror the remote structure (`<namespace>/<projectName>`).
+`reposync clone` will clone all repositories you have access to into the target directory, keeping the remote structure as close as possible.
 
-### Update
+**Notes:**
 
-`reposync update` will pull the latest changes from the remote server for tracked projects.
+- tracked repositories might be moved to track the remote structure changes (`<namespace>/<projectName>`).
+
+### Pull
+
+`reposync pull` will pull the latest changes for all tracked repositories.
+
+- `git fetch`
+- `git pull --ff-only`
+
+### List
+
+`reposync list` will list all tracked repositories.
+
+Additional options:
+
+- `--format` (`-f`) -> specify the output format (table, json, csv, ...)
+- `--columns` (`-c`) -> filter output by columns
 
 ### HouseKeeping
 
 `reposync housekeeping` (`reposync hk`) will run the following tasks for all repositories:
 
-- `git prune --expire now`
-- `git gc --auto`
-- `git fsck --full --unreachable --strict`
+- `repack` -> `git repack -a -d --write-bitmap-index`
+- `prune` -> `git prune --expire now`
+- `gc` -> `git gc --auto`
+- `fsck` -> `git fsck --full --unreachable --strict`
+- `commit-graph` -> `git commit-graph write --reachable`
+
+You can choose to only run a subset of the tasks by specifying them as arguments. For example, `reposync hk --jobs repack prune`.
+
+### Index
+
+> This is work-in-progress and not yet implemented.
+
+Before your first run, you can use `reposync index /old-project-dir`, to add your local projects to the known repositories.
+When running `reposync clone`, it will then move the projects to the new location, instead of cloning them.
 
 ### Rules
 
