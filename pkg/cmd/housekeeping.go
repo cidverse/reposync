@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"slices"
+
 	"github.com/cidverse/reposync/pkg/config"
 	"github.com/cidverse/reposync/pkg/repository"
 	"github.com/rs/zerolog/log"
@@ -14,6 +16,10 @@ func houseKeepingCmd() *cobra.Command {
 		Short:   `runs various housekeeping tasks for repositories (git gc, git prune, git fsck)`,
 		Run: func(cmd *cobra.Command, args []string) {
 			// flags
+			jobs, err := cmd.Flags().GetStringArray("jobs")
+			if err != nil {
+				log.Fatal().Err(err).Msg("failed to parse jobs flag")
+			}
 			silent, err := cmd.Flags().GetBool("silent")
 			if err != nil {
 				log.Fatal().Err(err).Msg("failed to parse silent flag")
@@ -41,28 +47,44 @@ func houseKeepingCmd() *cobra.Command {
 					continue
 				}
 
+				// repack
+				if slices.Contains(jobs, "repack") {
+					repackErr := repository.RepackRepository(r.Directory, silent)
+					if repackErr != nil {
+						log.Error().Err(repackErr).Str("repository", r.Directory).Msg("failed to repack repository")
+					}
+				}
+
 				// prune
-				pruneErr := repository.PruneRepository(r.Directory, silent)
-				if pruneErr != nil {
-					log.Error().Err(pruneErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+				if slices.Contains(jobs, "prune") {
+					pruneErr := repository.PruneRepository(r.Directory, silent)
+					if pruneErr != nil {
+						log.Error().Err(pruneErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+					}
 				}
 
 				// gc
-				gcErr := repository.GCRepository(r.Directory, silent)
-				if gcErr != nil {
-					log.Error().Err(gcErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+				if slices.Contains(jobs, "gc") {
+					gcErr := repository.GCRepository(r.Directory, silent)
+					if gcErr != nil {
+						log.Error().Err(gcErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+					}
 				}
 
 				// fsck
-				fsckErr := repository.FsckRepository(r.Directory, silent)
-				if fsckErr != nil {
-					log.Error().Err(fsckErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+				if slices.Contains(jobs, "fsck") {
+					fsckErr := repository.FsckRepository(r.Directory, silent)
+					if fsckErr != nil {
+						log.Error().Err(fsckErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+					}
 				}
 
 				// commit-graph
-				commitGraphErr := repository.RegenerateCommitGraph(r.Directory, silent)
-				if commitGraphErr != nil {
-					log.Error().Err(commitGraphErr).Str("repository", r.Directory).Msg("failed to regenerate commit")
+				if slices.Contains(jobs, "commit-graph") {
+					commitGraphErr := repository.RegenerateCommitGraph(r.Directory, silent)
+					if commitGraphErr != nil {
+						log.Error().Err(commitGraphErr).Str("repository", r.Directory).Msg("failed to regenerate commit")
+					}
 				}
 
 				log.Info().Str("repository", r.Directory).Msg("housekeeping completed")
@@ -70,7 +92,8 @@ func houseKeepingCmd() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().BoolP("silent", "s", false, "silent (omit stdout/stderr output) from cli commands")
+	cmd.Flags().StringArrayP("jobs", "j", []string{"repack", "prune", "gc", "fsck", "commit-graph"}, "jobs to run (repack, prune, gc, fsck, commit-graph)")
+	cmd.Flags().BoolP("silent", "s", false, "silent (omit stdout/stderr output) from cli commands")
 
 	return cmd
 }

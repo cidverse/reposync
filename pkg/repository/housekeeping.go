@@ -6,6 +6,22 @@ import (
 	"os/exec"
 )
 
+// RepackRepository repacks all objects in the repository to optimize storage
+func RepackRepository(target string, silent bool) error {
+	cmd := exec.Command("git", "repack", "-a", "-d", "--write-bitmap-index")
+	cmd.Dir = target
+	if !silent {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to repack repository: %w", err)
+	}
+
+	return nil
+}
+
 // FsckRepository runs the git file system check
 func FsckRepository(target string, silent bool) error {
 	cmd := exec.Command("git", "fsck", "--full", "--unreachable", "--strict")

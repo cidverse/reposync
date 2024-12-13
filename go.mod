@@ -26,6 +26,7 @@ require (
 	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0 // indirect
+	github.com/cidverse/cidverseutils/core v0.0.0-20241124224616-d11c8afe3a26 // indirect
 	github.com/cidverse/go-ptr v0.0.0-20240331160646-489e694bebbf // indirect
 	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.3.5 // indirect

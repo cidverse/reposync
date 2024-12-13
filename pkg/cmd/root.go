@@ -33,6 +33,7 @@ func rootCmd() *cobra.Command {
 	cmd.AddCommand(cloneCmd())
 	cmd.AddCommand(updateCmd())
 	cmd.AddCommand(houseKeepingCmd())
+	cmd.AddCommand(listCmd())
 	cmd.AddCommand(versionCmd())
 
 	return cmd
