@@ -53,3 +53,19 @@ func PruneRepository(target string, silent bool) error {
 
 	return nil
 }
+
+// RegenerateCommitGraph regenerates the commit graph for the repository
+func RegenerateCommitGraph(target string, silent bool) error {
+	cmd := exec.Command("git", "commit-graph", "write", "--reachable")
+	cmd.Dir = target
+	if !silent {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to regenerate commit graph: %w", err)
+	}
+
+	return nil
+}

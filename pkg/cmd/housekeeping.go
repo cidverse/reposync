@@ -11,7 +11,7 @@ func houseKeepingCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "housekeeping",
 		Aliases: []string{"hk"},
-		Short:   `runs various housekeeping tasks for repositories cloned by reposync (git gc, git prune, git fsck)`,
+		Short:   `runs various housekeeping tasks for repositories (git gc, git prune, git fsck)`,
 		Run: func(cmd *cobra.Command, args []string) {
 			// flags
 			silent, err := cmd.Flags().GetBool("silent")
@@ -57,6 +57,12 @@ func houseKeepingCmd() *cobra.Command {
 				fsckErr := repository.FsckRepository(r.Directory, silent)
 				if fsckErr != nil {
 					log.Error().Err(fsckErr).Str("repository", r.Directory).Msg("failed to fsck repository")
+				}
+
+				// commit-graph
+				commitGraphErr := repository.RegenerateCommitGraph(r.Directory, silent)
+				if commitGraphErr != nil {
+					log.Error().Err(commitGraphErr).Str("repository", r.Directory).Msg("failed to regenerate commit")
 				}
 
 				log.Info().Str("repository", r.Directory).Msg("housekeeping completed")
