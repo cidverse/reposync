@@ -7,10 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func updateCmd() *cobra.Command {
+func pullCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "update",
-		Aliases: []string{"u"},
+		Use:     "pull",
+		Aliases: []string{},
 		Short:   `pulls all changes for repositories cloned by reposync`,
 		Run: func(cmd *cobra.Command, args []string) {
 			// flags

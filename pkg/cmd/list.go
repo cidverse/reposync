@@ -16,6 +16,7 @@ func listCmd() *cobra.Command {
 		Short:   `list all repositories managed by reposync`,
 		Run: func(cmd *cobra.Command, args []string) {
 			format, _ := cmd.Flags().GetString("format")
+			columns, _ := cmd.Flags().GetStringSlice("columns")
 
 			// state
 			stateFile := config.StateFile()
@@ -38,6 +39,11 @@ func listCmd() *cobra.Command {
 				})
 			}
 
+			// filter columns
+			if len(columns) > 0 {
+				data = clioutputwriter.FilterColumns(data, columns)
+			}
+
 			// print
 			err = clioutputwriter.PrintData(os.Stdout, data, clioutputwriter.Format(format))
 			if err != nil {
@@ -48,6 +54,7 @@ func listCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("format", "f", "table", "output format (table, json, csv)")
+	cmd.Flags().StringSliceP("columns", "c", []string{}, "columns to display")
 
 	return cmd
 }
