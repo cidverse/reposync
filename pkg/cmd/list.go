@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/cidverse/cidverseutils/core/clioutputwriter"
@@ -53,7 +54,7 @@ func listCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP("format", "f", "table", "output format (table, json, csv)")
+	cmd.Flags().StringP("format", "f", string(clioutputwriter.DefaultOutputFormat()), fmt.Sprintf("output format %s", clioutputwriter.SupportedOutputFormats()))
 	cmd.Flags().StringSliceP("columns", "c", []string{}, "columns to display")
 
 	return cmd
