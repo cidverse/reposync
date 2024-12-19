@@ -36,7 +36,7 @@ Supported platforms:
 ## Installation
 
 ```bash
-curl -L -o ~/.local/bin/reposync https://github.com/cidverse/reposync/releases/download/v0.3.0/linux_amd64
+curl -L -o ~/.local/bin/reposync https://github.com/cidverse/reposync/releases/download/v0.5.0/linux_amd64
 chmod +x ~/.local/bin/reposync
 ```
 
