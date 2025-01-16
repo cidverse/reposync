@@ -6,7 +6,7 @@ module github.com/cidverse/reposync
 
 go 1.22.0
 
-toolchain go1.23.4
+toolchain go1.23.5
 
 require (
 	github.com/cidverse/cidverseutils/core v0.0.0-20241217232401-ec977fb5b6d7
