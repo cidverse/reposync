@@ -14,6 +14,7 @@ servers:
       username: YourAccount
       password: <readOnlyPersonalAccessToken>
       password-file: /path/to/file
+      password-command: pass show personal/github.com/read-only-pat
     mirror:
       dir: /tmp/github
       default-action: exclude

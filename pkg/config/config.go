@@ -3,7 +3,9 @@ package config
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
+	"runtime"
 	"strings"
 
 	"github.com/cidverse/go-rules/pkg/expr"
@@ -42,9 +44,10 @@ type RepoBundle struct {
 }
 
 type RepoSyncAuth struct {
-	Username     string `yaml:"username"`
-	Password     string `yaml:"password"`
-	PasswordFile string `yaml:"password-file"`
+	Username        string `yaml:"username"`
+	Password        string `yaml:"password"`
+	PasswordFile    string `yaml:"password-file"`
+	PasswordCommand string `yaml:"password-command"` // PasswordCommand can be defined to call e.g. pass or another cli password manager
 }
 
 type RepoBundleOptions struct {
@@ -101,6 +104,17 @@ func AuthToPlatformConfig(serverType string, serverUrl string, auth RepoSyncAuth
 			return vcsapp.PlatformConfig{}, fmt.Errorf("failed to read password file: %w", err)
 		}
 		auth.Password = string(file)
+	} else if auth.PasswordCommand != "" && runtime.GOOS != "windows" {
+		cmdString := os.ExpandEnv(auth.PasswordCommand)
+		cmd := exec.Command("sh", "-c", cmdString)
+		cmd.Stdin = os.Stdin
+		cmd.Stderr = os.Stderr
+		out, err := cmd.Output()
+		if err != nil {
+			return vcsapp.PlatformConfig{}, fmt.Errorf("failed to execute password command: %w", err)
+		}
+
+		auth.Password = strings.TrimSpace(string(out))
 	}
 
 	// password is required

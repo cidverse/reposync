@@ -74,7 +74,8 @@ func cloneCmd() *cobra.Command {
 				// query repositories
 				repos, repoErr := platform.Repositories(api.RepositoryListOpts{IncludeBranches: false, IncludeCommitHash: false})
 				if repoErr != nil {
-					log.Fatal().Err(repoErr).Msg("failed to list repositories")
+					log.Error().Err(repoErr).Msg("failed to list repositories")
+					continue
 				}
 				log.Info().Int("count", len(repos)).Str("server", s.Server).Msg("received repository list")
 
@@ -159,6 +160,8 @@ func cloneCmd() *cobra.Command {
 					// add to state
 					state.Repositories[uniqueId] = expectedState
 				}
+
+				log.Info().Str("server", s.Server).Str("identity", s.Auth.Username).Int("repo_count", len(repos)).Msg("server processed")
 			}
 
 			// clone sources

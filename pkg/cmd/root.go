@@ -14,7 +14,7 @@ var configFile string
 func rootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  `reposync`,
-		Long: `A cli tool to mirror/sync many projects onto the local file system (and/or merge content of specific folders to aggregate ie. doc files)`,
+		Long: `A cli tool to mirror/sync projects onto the local file system (and/or merge content of specific folders to aggregate ie. doc files)`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			zerologconfig.Configure(cfg)
 		},
