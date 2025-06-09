@@ -13,7 +13,7 @@ require (
 	github.com/cidverse/cidverseutils/zerologconfig v0.1.1
 	github.com/cidverse/go-rules v0.0.0-20231112122021-075e5e6f8abc
 	github.com/cidverse/go-vcsapp v0.0.0-20250217172114-514e74e330ae
-	github.com/go-git/go-git/v5 v5.16.1
+	github.com/go-git/go-git/v5 v5.16.2
 	github.com/gosimple/slug v1.15.0
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.9.1
