@@ -16,7 +16,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.4
 	github.com/gosimple/slug v1.15.0
 	github.com/rs/zerolog v1.34.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 
