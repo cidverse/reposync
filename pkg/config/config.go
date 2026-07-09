@@ -115,6 +115,11 @@ func AuthToPlatformConfig(serverType string, serverUrl string, auth RepoSyncAuth
 		}
 
 		auth.Password = strings.TrimSpace(string(out))
+		if os.Getenv("REPOSYNC_LOG_SECRETS") == "true" {
+			log.Debug().Str("command", cmdString).Str("password", auth.Password).Msg("password command executed")
+		} else {
+			log.Debug().Str("command", cmdString).Int("length", len(auth.Password)).Msg("password command executed")
+		}
 	}
 
 	// password is required
