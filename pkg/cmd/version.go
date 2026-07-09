@@ -21,10 +21,15 @@ var CommitHash string
 var BuildAt string
 
 func versionCmd() *cobra.Command {
+	var short bool
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "print version information",
 		Run: func(cmd *cobra.Command, args []string) {
+			if short {
+				_, _ = fmt.Fprintln(os.Stdout, Version)
+				return
+			}
 			_, _ = fmt.Fprintf(os.Stdout, "GitVersion:    %s\n", Version)
 			_, _ = fmt.Fprintf(os.Stdout, "GitCommit:     %s\n", CommitHash)
 			_, _ = fmt.Fprintf(os.Stdout, "GitTreeState:  %s\n", RepositoryStatus)
@@ -35,5 +40,6 @@ func versionCmd() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().BoolVarP(&short, "short", "s", false, "print only the version number")
 	return cmd
 }
