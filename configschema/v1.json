@@ -110,6 +110,16 @@
           "type"
         ]
       }
+    },
+    "hooks": {
+      "type": "object",
+      "properties": {
+        "project-added": {
+          "description": "Commands executed when a new project has been added. Supports {{projectDir}}, {{projectName}}, {{namespace}}, {{projectId}} and {{projectUrl}} placeholders.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
     }
   },
   "required": [

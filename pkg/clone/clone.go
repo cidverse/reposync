@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func FetchProject(source config.RepoSource, target string) {
+func FetchProject(source config.RepoSource, target string) bool {
 	if _, err := os.Stat(target); err != nil {
 		log.Debug().Str("directory", target).Msg("target directory is empty, cloning project")
 		_, cloneErr := git.PlainClone(target, false, &git.CloneOptions{
@@ -26,18 +26,20 @@ func FetchProject(source config.RepoSource, target string) {
 		})
 		if cloneErr != nil {
 			log.Error().Err(cloneErr).Str("directory", target).Str("repo", source.Url).Msg("repository clone failed")
-			return
+			return false
 		}
 
 		log.Info().Str("directory", target).Str("repo", source.Url).Msg("repository cloned successfully")
+		return true
 	} else {
 		if _, err := os.Stat(filepath.Join(target, ".git")); err != nil {
 			log.Error().Str("directory", target).Str("repo", source.Url).Msg("repository can't be updated, not a repository!")
+			return false
 		} else {
 			repo, repoOpenErr := git.PlainOpen(filepath.Join(target, ".git"))
 			if repoOpenErr != nil {
 				log.Warn().Err(repoOpenErr).Str("directory", target).Str("repo", source.Url).Msg("repository open failed")
-				return
+				return false
 			}
 
 			// fetch
@@ -48,7 +50,7 @@ func FetchProject(source config.RepoSource, target string) {
 			})
 			if fetchErr != nil && fetchErr.Error() != "already up-to-date" {
 				log.Warn().Err(fetchErr).Str("directory", target).Str("repo", source.Url).Msg("repository fetch failed")
-				return
+				return false
 			}
 
 			// pull
@@ -63,13 +65,15 @@ func FetchProject(source config.RepoSource, target string) {
 				})
 				if pullErr != nil {
 					log.Warn().Err(pullErr).Str("directory", target).Str("repo", source.Url).Msg("repository pull failed")
-					return
+					return false
 				}
 			}
 
 			log.Info().Str("directory", target).Str("repo", source.Url).Msg("repository updated successfully")
 		}
 	}
+
+	return false
 }
 
 func GetRepoAuth(source config.RepoSource) transport.AuthMethod {

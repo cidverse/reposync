@@ -11,6 +11,7 @@ import (
 	"github.com/cidverse/go-rules/pkg/expr"
 	"github.com/cidverse/go-vcsapp/pkg/platform/api"
 	"github.com/cidverse/go-vcsapp/pkg/vcsapp"
+	"github.com/cidverse/reposync/pkg/hooks"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,6 +20,7 @@ type RepoSyncConfig struct {
 	Servers []Server              `yaml:"servers"`
 	Sources []RepoSource          `yaml:"sources"`
 	Bundle  map[string]RepoBundle `yaml:"bundle"`
+	Hooks   hooks.Config          `yaml:"hooks"`
 }
 
 type Server struct {

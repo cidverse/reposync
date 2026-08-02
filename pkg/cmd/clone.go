@@ -9,6 +9,7 @@ import (
 	"github.com/cidverse/go-vcsapp/pkg/vcsapp"
 	"github.com/cidverse/reposync/pkg/clone"
 	"github.com/cidverse/reposync/pkg/config"
+	"github.com/cidverse/reposync/pkg/hooks"
 	"github.com/cidverse/reposync/pkg/repository"
 	"github.com/cidverse/reposync/pkg/util"
 	"github.com/rs/zerolog/log"
@@ -129,6 +130,15 @@ func cloneCmd() *cobra.Command {
 							log.Error().Err(cloneErr).Str("repo", r.Namespace+"/"+r.Name).Msg("failed to clone repository")
 							continue
 						}
+
+						// run hooks
+						hooks.Execute(c.Hooks.ProjectAdded, map[string]string{
+							"projectDir":  expectedState.Directory,
+							"projectName": expectedState.Name,
+							"namespace":   expectedState.Namespace,
+							"projectId":   expectedState.ID,
+							"projectUrl":  expectedState.Remote,
+						})
 					} else if currentState.Directory != expectedState.Directory {
 						log.Debug().Str("repo", r.Namespace+"/"+r.Name).Str("current-dir", currentState.Directory).Str("expected-dir", expectedState.Directory).Msg("repository present in different location, moving")
 						if dryRun {
@@ -167,7 +177,16 @@ func cloneCmd() *cobra.Command {
 			// clone sources
 			for _, s := range c.Sources {
 				log.Debug().Str("remote", s.Url).Str("remote-ref", s.Ref).Str("target", s.TargetDir).Msg("processing project")
-				clone.FetchProject(s, s.TargetDir)
+				cloned := clone.FetchProject(s, s.TargetDir)
+				if cloned {
+					hooks.Execute(c.Hooks.ProjectAdded, map[string]string{
+						"projectDir":  s.TargetDir,
+						"projectName": s.Url,
+						"namespace":   "",
+						"projectId":   s.Url,
+						"projectUrl":  s.Url,
+					})
+				}
 			}
 		},
 	}

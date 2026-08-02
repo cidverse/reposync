@@ -22,6 +22,9 @@ servers:
       rules:
         - rule: group == "my-org"
           action: include
+hooks:
+  project-added:
+    - zoxide add {{projectDir}}
 ```
 
 The configuration is read from `~/.config/reposync/config.yaml` by default, but you can also specify a custom path by setting the `REPOSYNC_CONFIG` environment variable.
@@ -33,6 +36,34 @@ Supported platforms:
 
 > The `git` commands will use your local git installation, so you can use ssh keys or other authentication methods.
 > The personal access tokens are only used to query the repositories you have access to and not to clone them.
+
+### Hooks
+
+Hooks allow you to run commands when certain events occur. Each hook is defined as a list of commands, which are executed in order.
+
+| Event           | Description                    | Variables                                                              |
+|-----------------|--------------------------------|------------------------------------------------------------------------|
+| `project-added` | a new project was added/cloned | `projectDir`, `projectName`, `namespace`, `projectId`, `projectUrl`                  |
+
+Example, to add newly cloned projects to your `zoxide` database:
+
+```yaml
+hooks:
+  project-added:
+    - zoxide add {{projectDir}}
+```
+
+The following variables are available inside hook commands:
+
+| Variable      | Description                            |
+|---------------|----------------------------------------|
+| `projectDir`  | The local directory of the project     |
+| `projectName` | The name of the project                |
+| `namespace`   | The namespace / group of the project   |
+| `projectId`   | The unique id of the project           |
+| `projectUrl`  | The remote url of the project          |
+
+Hooks are executed with your shell (`sh -c` on unix, `cmd /C` on windows) and can contain environment variables and shell syntax.
 
 ## Installation
 
@@ -79,12 +110,21 @@ Additional options:
 
 You can choose to only run a subset of the tasks by specifying them as arguments. For example, `reposync hk --jobs repack prune`.
 
-### Index
+### Hooks
 
-> This is work-in-progress and not yet implemented.
+`reposync hooks run <event>` runs the hooks for the given event for all tracked projects. This is useful if you added a new hook that should also apply to already known projects (by default hooks only run for newly added ones).
 
-Before your first run, you can use `reposync index /old-project-dir`, to add your local projects to the known repositories.
-When running `reposync clone`, it will then move the projects to the new location, instead of cloning them.
+```bash
+reposync hooks run project-added
+```
+
+- `--dry-run` (`-d`) -> print the commands that would be executed without running them
+
+### Version
+
+`reposync version` prints build information.
+
+- `--short` (`-s`) -> print only the version number
 
 ### Rules
 
