@@ -17,11 +17,16 @@ servers:
       password-command: pass show personal/github.com/read-only-pat
     mirror:
       dir: /tmp/github
+      clone-method: https
       default-action: exclude
       naming-style: slug
       rules:
         - rule: group == "my-org"
           action: include
+sources:
+  - url: https://github.com/cidverse/go-rules
+    ref: main
+    target: /tmp/extra/go-rules
 hooks:
   project-added:
     - zoxide add {{projectDir}}
@@ -36,6 +41,29 @@ Supported platforms:
 
 > The `git` commands will use your local git installation, so you can use ssh keys or other authentication methods.
 > The personal access tokens are only used to query the repositories you have access to and not to clone them.
+
+### Sources
+
+In addition to mirroring whole servers, you can track individual repositories via `sources`. Each source is cloned (or updated on subsequent runs) into a fixed local directory, regardless of the repository's remote namespace.
+
+```yaml
+sources:
+  - url: https://github.com/cidverse/go-rules   # repository url
+    ref: main                                   # branch/tag to check out (defaults to the remote HEAD)
+    target: /tmp/extra/go-rules                 # local directory
+```
+
+For private repositories, sources support the same auth as servers (`username`/`password`, `password-file`, `password-command`). Alternatively, credentials can be provided via environment variables in the form `REPOSYNC_<HOST>_USERNAME` and `REPOSYNC_<HOST>_PASSWORD`, where `<HOST>` is the slugified hostname (dots replaced with underscores, uppercased) — e.g. `REPOSYNC_GITHUB_COM_USERNAME` / `REPOSYNC_GITHUB_COM_PASSWORD` for `github.com`.
+
+### Clone Method
+
+Repositories mirrored from a server are cloned using `clone-method`, which can be set to `https` (default) or `ssh`. When set to `ssh`, the clone url is derived from the server and your local git/ssh configuration is used for authentication (the API token is only used to query the repository list).
+
+```yaml
+mirror:
+  dir: /tmp/github
+  clone-method: ssh
+```
 
 ### Hooks
 
@@ -140,6 +168,10 @@ Rules support the following variables to match against:
 | `is_fork`  | false             | Whether the project is a fork           |
 
 Rules follow the [Common Expression Language](https://github.com/google/cel-spec) syntax.
+
+### State
+
+RepoSync tracks mirrored repositories in a state file so it knows what to move, update, or prune on subsequent runs. The state is stored at `$XDG_CONFIG_HOME/reposync/state.json`, or `~/.config/reposync/state.json` if `XDG_CONFIG_HOME` is not set. Commands that touch repositories (`clone`, `pull`, `housekeeping`) load and persist this file on every run, so make sure the location is writable (e.g. in read-only CI containers).
 
 ## License
 

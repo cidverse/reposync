@@ -52,6 +52,11 @@ func LoadState(file string) (*SyncState, error) {
 		return s, err
 	}
 
+	// ensure the map is initialized (state file can contain a null value)
+	if s.Repositories == nil {
+		s.Repositories = map[string]RepositoryState{}
+	}
+
 	return s, nil
 }
 
