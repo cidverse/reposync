@@ -16,11 +16,12 @@ import (
 )
 
 type RepoSyncConfig struct {
-	Version int                   `yaml:"version"`
-	Servers []Server              `yaml:"servers"`
-	Sources []RepoSource          `yaml:"sources"`
-	Bundle  map[string]RepoBundle `yaml:"bundle"`
-	Hooks   hooks.Config          `yaml:"hooks"`
+	Version  int                   `yaml:"version"`
+	Includes []string              `yaml:"includes"`
+	Servers  []Server              `yaml:"servers"`
+	Sources  []RepoSource          `yaml:"sources"`
+	Bundle   map[string]RepoBundle `yaml:"bundle"`
+	Hooks    hooks.Config          `yaml:"hooks"`
 }
 
 type Server struct {

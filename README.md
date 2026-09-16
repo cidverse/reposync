@@ -42,6 +42,18 @@ Supported platforms:
 > The `git` commands will use your local git installation, so you can use ssh keys or other authentication methods.
 > The personal access tokens are only used to query the repositories you have access to and not to clone them.
 
+### Includes
+
+You can split your configuration into multiple files. A top-level `includes` list references other config files, which are merged into the main config (servers and sources are appended). Paths are resolved relative to the main config file; missing files are ignored.
+
+```yaml
+includes:
+  - reposync.user.yaml   # optional overrides, merged if present
+  - ~/team.yaml          # paths may use ~ and $ENV
+```
+
+> The `version` field must be identical in all included files.
+
 ### Sources
 
 In addition to mirroring whole servers, you can track individual repositories via `sources`. Each source is cloned (or updated on subsequent runs) into a fixed local directory, regardless of the repository's remote namespace.
