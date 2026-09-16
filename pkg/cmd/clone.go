@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -145,12 +146,24 @@ func cloneCmd() *cobra.Command {
 							continue
 						}
 
+					// check if the source directory still exists
+					if _, err := os.Stat(currentState.Directory); os.IsNotExist(err) {
+						log.Warn().Str("repo", r.Namespace+"/"+r.Name).Str("current-dir", currentState.Directory).Str("expected-dir", expectedState.Directory).Msg("source directory is missing, cloning repository into expected location")
+
+						// clone repository
+						cloneErr := repository.CloneRepository(expectedState.Directory, remote, silent)
+						if cloneErr != nil {
+							log.Error().Err(cloneErr).Str("repo", r.Namespace+"/"+r.Name).Msg("failed to clone repository")
+							continue
+						}
+					} else {
 						// move repository
 						moveErr := repository.MoveRepository(currentState.Directory, expectedState.Directory)
 						if moveErr != nil {
 							log.Error().Err(moveErr).Str("repo", r.Namespace+"/"+r.Name).Str("current-dir", currentState.Directory).Str("expected-dir", expectedState.Directory).Msg("failed to move repository")
 							continue
 						}
+					}
 					} else if currentState.Directory == expectedState.Directory {
 						log.Debug().Str("repo", r.Namespace+"/"+r.Name).Str("dir", expectedState.Directory).Msg("repository already present in expected location")
 					}
