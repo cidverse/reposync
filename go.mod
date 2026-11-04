@@ -7,7 +7,7 @@ module github.com/cidverse/reposync
 go 1.26.0
 
 require (
-	github.com/cidverse/cidverseutils/core v0.0.0-20260723200732-9731cafac3c3
+	github.com/cidverse/cidverseutils/core v0.1.0
 	github.com/cidverse/cidverseutils/zerologconfig v0.1.1
 	github.com/cidverse/go-rules v0.0.0-20250614224628-52704bb6b812
 	github.com/cidverse/go-vcsapp v0.0.0-20260801220429-a6d65c6a6edc
